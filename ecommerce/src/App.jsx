@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import './App.css'
 import { CardProduct } from './components/CardProduct.jsx'
+import { MainLayout } from './layouts/MainLayout.jsx'
+
 
 function App() {
   const productos = [
