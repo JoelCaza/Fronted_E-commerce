@@ -2,24 +2,38 @@ import { useState } from 'react'
 import './App.css'
 import { CardProduct } from './components/CardProduct.jsx'
 import { MainLayout } from './layouts/MainLayout.jsx'
-
+import { Routes, Route, BrowserRouter } from 'react-router-dom'
+import { Home } from "./pages/Home.jsx"
+import { Products } from './pages/Products.jsx'
+import { Login } from './pages/Login.jsx'
+import { Categoria } from './pages/Categoria.jsx'
+import { NotFound } from './pages/NotFound.jsx'
+import { ProductDetail } from './pages/ProductDetail.jsx'
+import { Carrito } from './pages/Carrito.jsx'
+import { CartProvider } from './context/ContextCart.jsx'
+import { AdminProductos } from './pages/AdminProductos.jsx'
 
 function App() {
-  const productos = [
-    { id: 1, nombre: "laptop", precio: 1000, imagen: "https://placehold.net/9.png", descripcion: "Es una laptop", OnSale: true, outStock: false },
-    { id: 2, nombre: "mouse", precio: 200, imagen: "https://placehold.net/9.png", descripcion: "Es un mouse", OnSale: false, outStock: true },
-    { id: 3, nombre: "teclado", precio: 300, imagen: "https://placehold.net/9.png", descripcion: "Es un teclado", OnSale: false, outStock: false },
-  ]
+
 
   return (
-    <>
-      <h1>Productos</h1>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px" }}>
-        {productos.map(producto => (
-          <CardProduct key={producto.id} producto={producto} />
-        ))}
-      </div>
-    </>
+    <CartProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/Login" element={<Login />} />
+
+        <Route path="/" element={<MainLayout />}>
+          <Route index element={<Home />} />
+          <Route path="productos" element={<Products />} />
+          <Route path="productos/:id" element={<ProductDetail />} />
+          <Route path='categoria' element={<Categoria />} />
+          <Route path='carrito' element={<Carrito />}/>
+          <Route path='adminProductos' element={<AdminProductos />}/>
+          <Route path="/*" element={<NotFound />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+    </CartProvider>
   )
 }
 

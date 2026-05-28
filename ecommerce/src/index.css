@@ -1,47 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+/* ══════════════════════════════════════════
+   DESIGN TOKENS — Paleta Global
+   Violet Luxury Dark
+══════════════════════════════════════════ */
 :root {
-  --text: #00d4fa;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  /* Brand colors */
+  --c-accent:        #7c3aed;        /* violet-600 */
+  --c-accent-light:  #a78bfa;        /* violet-400 */
+  --c-accent-dim:    rgba(124, 58, 237, 0.15);
+  --c-accent-glow:   rgba(124, 58, 237, 0.35);
+  --c-accent-border: rgba(124, 58, 237, 0.4);
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  /* Secondary */
+  --c-secondary:     #2563eb;        /* blue-600 */
+  --c-secondary-light: #60a5fa;      /* blue-400 */
+  --c-secondary-glow: rgba(37, 99, 235, 0.3);
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
+  /* Surfaces */
+  --c-bg:            #06060f;        /* near black */
+  --c-surface:       #0e0e1c;        /* card/panel bg */
+  --c-surface-2:     #14142a;        /* elevated surface */
+  --c-surface-3:     #1c1c38;        /* hover/active surface */
+  --c-navbar-bg:     rgba(14, 14, 28, 0.9);   /* sticky navbar */
+
+  /* Borders */
+  --c-border:        rgba(255, 255, 255, 0.07);
+  --c-border-hover:  rgba(124, 58, 237, 0.45);
+
+  /* Text */
+  --c-text-primary:  #f1f5f9;
+  --c-text-secondary: rgba(255,255,255,0.45);
+  --c-text-muted:    rgba(255,255,255,0.22);
+
+  /* Feedback */
+  --c-success:       #10b981;
+  --c-danger:        #ef4444;
+  --c-warning:       #f59e0b;
+
+  /* Radius */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 18px;
+  --r-xl: 24px;
+
+  /* Shadows */
+  --shadow-card:  0 8px 32px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.04) inset;
+  --shadow-glow:  0 0 0 3px var(--c-accent-dim), 0 8px 32px var(--c-accent-glow);
+
+  /* Typography */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--c-text-primary);
+  background-color: var(--c-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  text-rendering: optimizeLegibility;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #77c437;
-    --text-h: #000000;
-    --bg: #ffffff;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
+/* ── Body & reset ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--c-bg);
+  color: var(--c-text-primary);
+  transition: background 0.35s ease, color 0.35s ease;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* ══════════════════════════════════════════
+   LIGHT THEME OVERRIDES
+   Applied via <html data-theme="light">
+══════════════════════════════════════════ */
+[data-theme="light"] {
+  --c-bg:            #f5f4ff;
+  --c-surface:       #ffffff;
+  --c-surface-2:     #ede9fe;
+  --c-surface-3:     #ddd6fe;
+  --c-navbar-bg:     rgba(255, 255, 255, 0.92);
+
+  --c-border:        rgba(0, 0, 0, 0.08);
+  --c-border-hover:  rgba(124, 58, 237, 0.4);
+
+  --c-text-primary:  #0f0f1a;
+  --c-text-secondary: rgba(15, 15, 26, 0.55);
+  --c-text-muted:    rgba(15, 15, 26, 0.3);
+
+  --shadow-card: 0 4px 20px rgba(0,0,0,0.08), 0 1px 0 rgba(255,255,255,0.8) inset;
+  --shadow-glow: 0 0 0 3px rgba(124,58,237,0.12), 0 8px 24px rgba(124,58,237,0.2);
 }
