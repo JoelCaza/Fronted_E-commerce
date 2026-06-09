@@ -1,146 +1,169 @@
-    import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import { 
+    Tag, 
+    Plus, 
+    Trash2, 
+    Loader2, 
+    AlertCircle, 
+    CheckCircle2,
+    Search
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { getCategories, createCategory, deleteCategory } from "../services/categoryService";
+import "./Categoria.css";
 
-    export const Categoria = () => {
-        // Estados
-        const [categorias, setCategorias] = useState([]);
-        const [nuevaCategoria, setNuevaCategoria] = useState("");
-        const [mensaje, setMensaje] = useState("");
-        const [cargando, setCargando] = useState(true);
+export const Categoria = () => {
+    const [categorias, setCategorias] = useState([]);
+    const [nuevaCategoria, setNuevaCategoria] = useState("");
+    const [mensaje, setMensaje] = useState({ text: "", type: "" });
+    const [cargando, setCargando] = useState(true);
+    const [busqueda, setBusqueda] = useState("");
 
-        // 1. Función para OBTENER las categorías (GET)
-        const obtenerCategorias = async () => {
-            try {
-                const res = await fetch(`${import.meta.env.VITE_API_URL}/categorias`);
-                const data = await res.json();
-                
-                if (res.ok) {
-                   
-                    setCategorias(data);
-                }
-            } catch (error) {
-                console.error("Error al cargar categorías:", error);
-                setMensaje("Error al conectar con el servidor.");
-            } finally {
-                setCargando(false);
-            }
-        };
+    const obtenerCategorias = async () => {
+        try {
+            const data = await getCategories();
+            setCategorias(data);
+        } catch (error) {
+            console.error("Error al cargar categorías:", error);
+            showMensaje("Error al conectar con el servidor", "error");
+        } finally {
+            setCargando(false);
+        }
+    };
 
-        // Ejecutar al montar el componente
-        useEffect(() => {
+    useEffect(() => {
+        obtenerCategorias();
+    }, []);
+
+    const showMensaje = (text, type) => {
+        setMensaje({ text, type });
+        setTimeout(() => setMensaje({ text: "", type: "" }), 3000);
+    };
+
+    const handleCrear = async (e) => {
+        e.preventDefault();
+        try {
+            await createCategory(nuevaCategoria);
+            showMensaje("Categoría creada exitosamente", "success");
+            setNuevaCategoria("");
             obtenerCategorias();
-        }, []);
+        } catch (error) {
+            showMensaje(error.data?.error || "Error al crear la categoría", "error");
+        }
+    };
 
-        // 2. Función para CREAR una categoría (POST)
-        const handleCrear = async (e) => {
-            e.preventDefault();
-            setMensaje("");
+    const handleEliminar = async (id) => {
+        if (!window.confirm("¿Estás seguro de eliminar esta categoría?")) return;
+        try {
+            await deleteCategory(id);
+            showMensaje("Categoría eliminada", "success");
+            obtenerCategorias();
+        } catch (error) {
+            showMensaje(error.data?.error || "Error al eliminar", "error");
+        }
+    };
 
-            try {
-                const res = await fetch(`${import.meta.env.VITE_API_URL}/categorias`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        // Si protegiste esta ruta en el backend, descomenta la siguiente línea:
-                        "Authorization": `Bearer ${localStorage.getItem("token")}`
-                    },
-                    body: JSON.stringify({ nombre: nuevaCategoria })
-                });
+    const categoriasFiltradas = categorias.filter(c => 
+        c.nombre.toLowerCase().includes(busqueda.toLowerCase())
+    );
 
-                const data = await res.json();
+    return (
+        <div className="admin-page">
+            <div className="container narrow">
+                <header className="admin-header">
+                    <h1 className="page-title">Gestión de <span className="text-gradient">Categorías</span></h1>
+                    <p>Organiza tu inventario creando y gestionando categorías personalizadas.</p>
+                </header>
 
-                if (res.ok) {
-                    setMensaje("✅ Categoría creada exitosamente");
-                    setNuevaCategoria(""); // Limpiar el input
-                    obtenerCategorias(); // Volver a pedir la lista para que se actualice la pantalla
-                } else {
-                    setMensaje("❌ Error: " + data.error);
-                }
-            } catch (error) {
-                console.error("Error al crear:", error);
-                setMensaje("❌ Error de conexión al crear.");
-            }
-        };
-
-        // 3. Función para ELIMINAR una categoría (DELETE)
-        const handleEliminar = async (id) => {
-            if (!window.confirm("¿Estás seguro de eliminar esta categoría?")) return;
-
-            try {
-                const res = await fetch(`${import.meta.env.VITE_API_URL}/categorias/eliminarCategoria/${id}`, {
-                    method: "DELETE",
-                    headers: {
-                        "Authorization": `Bearer ${localStorage.getItem("token")}`
-                    }
-                });
-
-                const data = await res.json();
-
-                if (res.ok) {
-                    setMensaje("✅ Categoría eliminada");
-                    obtenerCategorias(); // Refrescar la lista
-                } else {
-                    setMensaje("❌ Error: " + data.error);
-                }
-            } catch (error) {
-                console.error("Error al eliminar:", error);
-            }
-        };
-
-        return (
-            <div style={{ maxWidth: "600px", margin: "40px auto", padding: "20px" }}>
-                <h1 style={{ textAlign: "center" }}>Gestión de Categorías 🏷️</h1>
-
-                {/* Formulario para agregar categoría */}
-                <div style={{ padding: "20px", border: "1px solid #ddd", borderRadius: "8px", marginBottom: "20px" }}>
-                    <h3>Agregar Nueva</h3>
-                    <form onSubmit={handleCrear} style={{ display: "flex", gap: "10px" }}>
-                        <input
-                            type="text"
-                            placeholder="Nombre de la categoría..."
-                            value={nuevaCategoria}
-                            onChange={(e) => setNuevaCategoria(e.target.value)}
-                            required
-                            style={{ flex: 1, padding: "8px" }}
-                        />
-                        <button type="submit" style={{ padding: "8px 15px", backgroundColor: "#10b981", color: "white", border: "none", cursor: "pointer", borderRadius: "4px" }}>
-                            Guardar
+                <section className="admin-card">
+                    <h3><Plus size={18} /> Agregar Nueva Categoría</h3>
+                    <form onSubmit={handleCrear} className="admin-form">
+                        <div className="input-group">
+                            <Tag className="input-icon" size={18} />
+                            <input
+                                type="text"
+                                placeholder="Ej: Electrónica, Moda, Hogar..."
+                                value={nuevaCategoria}
+                                onChange={(e) => setNuevaCategoria(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <button type="submit" className="btn-primary">
+                            Guardar Categoría
                         </button>
                     </form>
-                    {mensaje && <p style={{ marginTop: "10px", fontWeight: "bold" }}>{mensaje}</p>}
-                </div>
+                    
+                    <AnimatePresence>
+                        {mensaje.text && (
+                            <motion.div 
+                                className={`alert ${mensaje.type}`}
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0 }}
+                            >
+                                {mensaje.type === 'success' ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
+                                {mensaje.text}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </section>
 
-                {/* Lista de categorías */}
-                <h3>Lista de Categorías</h3>
-                {cargando ? (
-                    <p>Cargando categorías...</p>
-                ) : (
-                    <ul style={{ listStyle: "none", padding: 0 }}>
-                        {categorias.map((cat) => (
-                            <li key={cat.id} style={{ 
-                                display: "flex", 
-                                justifyContent: "space-between", 
-                                alignItems: "center",
-                                padding: "10px", 
-                                borderBottom: "1px solid #eee" 
-                            }}>
-                                <span>
-                                    <strong>{cat.nombre}</strong> 
-                                    {/* Mostramos si está activa o no (si tu BD tiene el campo) */}
-                                    <span style={{ fontSize: "12px", color: "gray", marginLeft: "10px" }}>
-                                        {cat.activa !== undefined ? (cat.activa ? "(Activa)" : "(Inactiva)") : ""}
-                                    </span>
-                                </span>
-                                
-                                <button 
-                                    onClick={() => handleEliminar(cat.id)}
-                                    style={{ backgroundColor: "#ef4444", color: "white", border: "none", padding: "5px 10px", cursor: "pointer", borderRadius: "4px" }}
-                                >
-                                    Eliminar
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
-                )}
+                <section className="list-section">
+                    <div className="list-header">
+                        <h3>Categorías Existentes ({categorias.length})</h3>
+                        <div className="search-mini">
+                            <Search size={14} />
+                            <input 
+                                type="text" 
+                                placeholder="Buscar..." 
+                                value={busqueda}
+                                onChange={(e) => setBusqueda(e.target.value)}
+                            />
+                        </div>
+                    </div>
+
+                    {cargando ? (
+                        <div className="loading-state">
+                            <Loader2 className="spinner" size={32} />
+                            <p>Cargando categorías...</p>
+                        </div>
+                    ) : (
+                        <div className="category-list">
+                            <AnimatePresence>
+                                {categoriasFiltradas.map((cat) => (
+                                    <motion.div 
+                                        key={cat.id} 
+                                        className="category-item"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        layout
+                                    >
+                                        <div className="cat-info">
+                                            <span className="cat-dot"></span>
+                                            <strong>{cat.nombre}</strong>
+                                            {cat.activa !== false && <span className="cat-badge">Activa</span>}
+                                        </div>
+                                        <button 
+                                            className="cat-delete"
+                                            onClick={() => handleEliminar(cat.id)}
+                                            title="Eliminar"
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
+                                    </motion.div>
+                                ))}
+                            </AnimatePresence>
+                            
+                            {categoriasFiltradas.length === 0 && !cargando && (
+                                <div className="empty-mini">
+                                    <p>No se encontraron categorías.</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </section>
             </div>
-        );
-    };
+        </div>
+    );
+};

@@ -1,12 +1,33 @@
-import { Outlet, Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { Outlet, Link, useLocation } from "react-router-dom";
+import { useState, useEffect, useContext } from "react";
+import { ContextCart } from "../context/ContextCart";
+import { 
+    ShoppingBag, 
+    User, 
+    Menu, 
+    X, 
+    Sun, 
+    Moon, 
+    Settings, 
+    Package, 
+    MessageSquare,
+    ChevronRight,
+    Globe,
+    Send,
+    Camera
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { BotWidget } from "../components/BotWidget";
 import "./MainLayout.css";
 
 export const MainLayout = () => {
+    const { carrito } = useContext(ContextCart);
+    const cartCount = carrito.reduce((acc, item) => acc + (item.cantidad || 1), 0);
     const [isDark, setIsDark] = useState(() => {
-        // Persist preference in localStorage
         return localStorage.getItem('theme') !== 'light';
     });
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const location = useLocation();
 
     useEffect(() => {
         const theme = isDark ? 'dark' : 'light';
@@ -16,71 +37,120 @@ export const MainLayout = () => {
 
     const toggleTheme = () => setIsDark(prev => !prev);
 
+    // Close menu on navigation
+    useEffect(() => {
+        setIsMenuOpen(false);
+    }, [location]);
+
     return (
         <div className="layout-container">
             <nav className="navbar">
-                <Link to="/" className="navbar-brand">
-                    Tienda<span className="navbar-brand-dot"></span>
-                </Link>
-
-                <div className="navbar-links">
-                    <Link className="nav-link" to="/">Inicio</Link>
-                    <Link className="nav-link" to="/productos">Productos</Link>
-                    <Link className="nav-link" to="/categoria">Categorias</Link>
-                    <Link className="nav-link" to="/adminProductos">Crud Productos</Link>
-
-                </div>
-
-                <div className="navbar-actions">
-                    {/* Theme toggle */}
-                    <button
-                        className="theme-toggle"
-                        onClick={toggleTheme}
-                        aria-label={isDark ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'}
-                        title={isDark ? 'Modo claro' : 'Modo oscuro'}
-                    >
-                        <span className="theme-toggle-track">
-                            <span className="theme-toggle-thumb"></span>
-                        </span>
-                        <span className="theme-toggle-icon">
-                            {isDark ? (
-                                /* Moon */
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                                </svg>
-                            ) : (
-                                /* Sun */
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <circle cx="12" cy="12" r="5" />
-                                    <line x1="12" y1="1" x2="12" y2="3" />
-                                    <line x1="12" y1="21" x2="12" y2="23" />
-                                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                                    <line x1="1" y1="12" x2="3" y2="12" />
-                                    <line x1="21" y1="12" x2="23" y2="12" />
-                                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-                                </svg>
-                            )}
-                        </span>
-                    </button>
-
-                    <Link className="nav-cart-btn" to="/carrito">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="9" cy="21" r="1"></circle>
-                            <circle cx="20" cy="21" r="1"></circle>
-                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                        </svg>
-                        Carrito
+                <div className="container navbar-inner">
+                    <Link to="/" className="navbar-brand">
+                        <span>ECO</span>
+                        <span className="text-gradient">STORE</span>
                     </Link>
+
+                    <div className="navbar-links-desktop">
+                        <Link className={`nav-link ${location.pathname === '/' ? 'active' : ''}`} to="/">Inicio</Link>
+                        <Link className={`nav-link ${location.pathname === '/productos' ? 'active' : ''}`} to="/productos">Colección</Link>
+                        <Link className={`nav-link ${location.pathname === '/categoria' ? 'active' : ''}`} to="/categoria">Categorías</Link>
+                        <Link className="nav-link" to="/adminProductos">Panel</Link>
+                    </div>
+
+                    <div className="navbar-actions">
+                        <button className="icon-btn theme-toggle" onClick={toggleTheme}>
+                            {isDark ? <Sun size={20} /> : <Moon size={20} />}
+                        </button>
+                        
+                        <Link className="nav-cart-btn" to="/carrito">
+                            <ShoppingBag size={20} />
+                            {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
+                        </Link>
+
+                        <button className="icon-btn mobile-menu-toggle" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                        </button>
+                    </div>
                 </div>
             </nav>
+
+            <AnimatePresence>
+                {isMenuOpen && (
+                    <motion.div 
+                        className="mobile-menu"
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                    >
+                        <div className="mobile-menu-links">
+                            <Link to="/">Inicio</Link>
+                            <Link to="/productos">Colección</Link>
+                            <Link to="/categoria">Categorías</Link>
+                            <Link to="/mispedidos">Mis Pedidos</Link>
+                            <Link to="/adminProductos">Administración</Link>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <main className="main-content">
                 <Outlet />
             </main>
+
+            <BotWidget />
+
+            <footer className="footer">
+                <div className="container">
+                    <div className="footer-grid">
+                        <div className="footer-brand">
+                            <Link to="/" className="navbar-brand">
+                                <span>ECO</span>
+                                <span className="text-gradient">STORE</span>
+                            </Link>
+                            <p className="footer-desc">
+                                Definiendo el futuro del comercio digital con elegancia y sostenibilidad.
+                            </p>
+                            <div className="footer-socials">
+                                <a href="#" className="social-link"><Send size={20} /></a>
+                                <a href="#" className="social-link"><Camera size={20} /></a>
+                                <a href="#" className="social-link"><Globe size={20} /></a>
+                            </div>
+                        </div>
+
+                        <div className="footer-nav">
+                            <h4>Tienda</h4>
+                            <Link to="/productos">Todos los productos</Link>
+                            <Link to="/categoria">Categorías</Link>
+                            <Link to="/productos?novedades=true">Novedades</Link>
+                        </div>
+
+                        <div className="footer-nav">
+                            <h4>Cuenta</h4>
+                            <Link to="/login">Iniciar Sesión</Link>
+                            <Link to="/mispedidos">Mis Pedidos</Link>
+                            <Link to="/carrito">Mi Carrito</Link>
+                        </div>
+
+                        <div className="footer-newsletter">
+                            <h4>Suscríbete</h4>
+                            <p>Recibe ofertas exclusivas y novedades.</p>
+                            <div className="newsletter-form">
+                                <input type="email" placeholder="tu@email.com" />
+                                <button className="btn-send"><ChevronRight size={20} /></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="footer-bottom">
+                        <p>&copy; 2026 ECOSTORE. Todos los derechos reservados.</p>
+                        <div className="footer-legal">
+                            <a href="#">Privacidad</a>
+                            <a href="#">Términos</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
         </div>
     );
 };
-
-export default MainLayout;

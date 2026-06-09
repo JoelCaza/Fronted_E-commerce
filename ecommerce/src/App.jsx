@@ -12,9 +12,9 @@ import { ProductDetail } from './pages/ProductDetail.jsx'
 import { Carrito } from './pages/Carrito.jsx'
 import { CartProvider } from './context/ContextCart.jsx'
 import { AdminProductos } from './pages/AdminProductos.jsx'
+import { MisPedidos } from './pages/MisPedidos.jsx'
 
 function App() {
-
 
   return (
     <CartProvider>
@@ -29,6 +29,7 @@ function App() {
           <Route path='categoria' element={<Categoria />} />
           <Route path='carrito' element={<Carrito />}/>
           <Route path='adminProductos' element={<AdminProductos />}/>
+          <Route path='mispedidos' element={<MisPedidos />}/>
           <Route path="/*" element={<NotFound />} />
         </Route>
       </Routes>

@@ -1,22 +1,21 @@
 import { CardProduct } from "../components/CardProduct.jsx";
-import { ContextCart } from "../context/ContextCart.jsx";
 import "./Products.css";
-import { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Search, Filter, SlidersHorizontal, Loader2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { getProducts } from "../services/productService";
 
 export const Products = () => {
     const [busqueda, setBusqueda] = useState('');
-    const {agregarAlCarrito} = useContext(ContextCart);
     const [productos, setProductos] = useState([]);
     const [cargando, setCargando] = useState(true);
+    const [categoriaActiva, setCategoriaActiva] = useState('Todas');
 
     useEffect(() => {
         const obtenerProductos = async () => {
             try {
-                const response = await fetch(`${import.meta.env.VITE_PUBLIC_URL}/productos`);
-                const data = await response.json();
+                const data = await getProducts();
                 setProductos(data);
-                console.log("Productos obtenidos:", data);
                 setCargando(false);
             }
             catch (error) {
@@ -27,60 +26,89 @@ export const Products = () => {
         obtenerProductos();
     }, []);
 
+    const categorias = ['Todas', ...new Set(productos.map(p => 
+        (p.categoria && typeof p.categoria === 'object') ? p.categoria.nombre : (p.categoria || 'Varios')
+    ))];
 
+    const productosFiltrados = productos.filter(producto => {
+        const matchesSearch = producto.nombre.toLowerCase().includes(busqueda.toLowerCase());
+        const categoryName = (producto.categoria && typeof producto.categoria === 'object') ? producto.categoria.nombre : (producto.categoria || 'Varios');
+        const matchesCategory = categoriaActiva === 'Todas' || categoryName === categoriaActiva;
+        return matchesSearch && matchesCategory;
+    });
 
+    return (
+        <div className="products-page">
+            <header className="products-header">
+                <div className="container">
+                    <motion.h1 
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="page-title"
+                    >
+                        Nuestra <span className="text-gradient">Colección</span>
+                    </motion.h1>
+                    <p className="page-subtitle">Explora {productos.length} productos exclusivos diseñados para ti.</p>
+                </div>
+            </header>
 
- return (
-        <div className="products-container">
-            <h1 className="products-title">Productos</h1>
-            <p className="products-subtitle">Explora nuestra colección exclusiva</p>
+            <div className="container">
+                <div className="filters-bar">
+                    <div className="search-wrapper">
+                        <Search size={18} className="search-icon" />
+                        <input
+                            type="text"
+                            placeholder="Buscar productos..."
+                            value={busqueda}
+                            onChange={(e) => setBusqueda(e.target.value)}
+                        />
+                    </div>
 
-            <div className="products-search-wrapper">
-                <span className="products-search-icon">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                </span>
-                <input
-                    className="products-search"
-                    type="text"
-                    placeholder="Buscar productos..."
-                    value={busqueda}
-                    onChange={(e) => setBusqueda(e.target.value)}
-                />
-            </div>
+                    <div className="category-filters">
+                        {categorias.map(cat => (
+                            <button 
+                                key={cat}
+                                className={`filter-chip ${categoriaActiva === cat ? 'active' : ''}`}
+                                onClick={() => setCategoriaActiva(cat)}
+                            >
+                                {cat}
+                            </button>
+                        ))}
+                    </div>
 
-            <div className="products-grid">
-                {productos.filter(producto => producto.nombre.toLowerCase().includes(busqueda.toLowerCase()))
-                    .map(producto => (
-                        <Link to={`/product/${producto.id}`} key={producto.id} className="products-link">
-                            
-                            {/* Integramos el HTML de la tarjeta directamente aquí */}
-                            <div className="card-product">
-                                <img 
-                                    src={producto.imagen || "https://via.placeholder7.com/150"} 
-                                    alt={producto.nombre} 
-                                    className="card-product-image" 
-                                />
-                                <div className="card-product-info">
-                                    <h3 className="card-product-name">{producto.nombre}</h3>
-                                    <p className="card-product-price">${producto.precio}</p>
-                                    <p className="card-product-description">{producto.descripcion}</p>
-                                    <h3 className="card-product-category">{producto.stock}</h3>
-                                    <button
-                                    onClick={() => agregarAlCarrito(producto)}
-                                    disabled = {producto.stock === 0}
-                                    >
-                                        {producto.stock === 0 ? "Agotado" : "Agregar al carrito"}
+                    <button className="icon-btn-text">
+                        <SlidersHorizontal size={18} />
+                        <span>Filtros</span>
+                    </button>
+                </div>
 
-                                    </button>
-                                </div>
-                            </div>
-                            
-                        </Link>
-                    ))
-                }
+                {cargando ? (
+                    <div className="loading-state">
+                        <Loader2 className="spinner" size={48} />
+                        <p>Cargando colección...</p>
+                    </div>
+                ) : (
+                    <motion.div 
+                        className="products-grid"
+                        layout
+                    >
+                        <AnimatePresence mode="popLayout">
+                            {productosFiltrados.map((producto) => (
+                                <CardProduct key={producto.id} producto={producto} />
+                            ))}
+                        </AnimatePresence>
+                    </motion.div>
+                )}
+
+                {!cargando && productosFiltrados.length === 0 && (
+                    <div className="empty-state">
+                        <h3>No se encontraron productos</h3>
+                        <p>Intenta ajustar tu búsqueda o filtros.</p>
+                        <button className="btn-secondary" onClick={() => {setBusqueda(''); setCategoriaActiva('Todas');}}>
+                            Limpiar filtros
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );

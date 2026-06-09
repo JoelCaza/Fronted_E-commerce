@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { login } from "../services/authService";
 import "./Login.css";
 
 export const Login = () => {
@@ -11,27 +12,17 @@ export const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch(`${import.meta.env.VITE_PUBLIC_URL}/auth/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password })
-            });
-            const data = await response.json();
-            if (response.ok) {
-                localStorage.setItem("token",data.token);
-                setLoading(true);
-                console.log("Login Existoso");
-                setTimeout(() => {
-                    navigate("/");
-                },2000);
-            }
-            else{
-                console.log("Error en el login",data.error);
-            }
-        }catch(error){
-            console.log("Error al inciar sesion",error);
+            setLoading(true);
+            const data = await login(email, password);
+            localStorage.setItem("token", data.token);
+            console.log("Login Exitoso");
+            setTimeout(() => {
+                navigate("/");
+            }, 2000);
+        } catch (error) {
+            console.error("Error al iniciar sesión", error);
+            setLoading(false);
         }
-        
     };
 
     return (
