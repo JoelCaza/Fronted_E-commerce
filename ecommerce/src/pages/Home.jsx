@@ -1,116 +1,181 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
     ArrowRight, 
     Zap, 
     ShieldCheck, 
     Truck, 
-    Globe, 
     Sparkles,
     ChevronRight,
     ShoppingBag
 } from 'lucide-react';
-import './Home.css';
-import heroImage from '../assets/hero.png';
+import '../styles/Home.css';
+// Asegúrate de que la ruta de tu imagen sea correcta
+import heroImage from '../assets/hero.png'; 
 
 export const Home = () => {
-    const fadeIn = {
-        initial: { opacity: 0, y: 20 },
-        animate: { opacity: 1, y: 0 },
-        transition: { duration: 0.6 }
-    };
+    const [currentSlide, setCurrentSlide] = useState(0);
 
-    const stagger = {
-        animate: {
-            transition: {
-                staggerChildren: 0.1
-            }
+    const slides = [
+        {
+            id: 1,
+            brand: "Honkai Impact 3rd", // Texto pequeño superior estilo marca/juego
+            title: "v8.8 [Adrift in the\nSea of Data]",
+            subtitle: "Descubre el nexo donde el arte cobra vida. La nueva versión ya está disponible.",
+            image: heroImage,
+            thumbnail: heroImage, 
+            align: "left"
+        },
+        {
+            id: 2,
+            brand: "Genshin Impact",
+            title: "Ediciones Limitadas\nDisponibles Ahora",
+            subtitle: "Asegura tu pieza de historia. Figuras a escala ultra detalladas con disponibilidad limitada.",
+            image: "https://images.unsplash.com/photo-1608889175123-8ee362201f81?q=80&w=1920&auto=format&fit=crop",
+            thumbnail: "https://images.unsplash.com/photo-1608889175123-8ee362201f81?q=80&w=300&auto=format&fit=crop",
+            align: "left"
+        },
+        {
+            id: 3,
+            brand: "Zenless Zone Zero",
+            title: "El Arte del Detalle\nEsculturas Maestras",
+            subtitle: "Cada figura es una obra de arte pintada a mano, capturando la esencia pura de tus personajes.",
+            image: "https://images.unsplash.com/photo-1614027164847-1b28cfe1df60?q=80&w=1920&auto=format&fit=crop",
+            thumbnail: "https://images.unsplash.com/photo-1614027164847-1b28cfe1df60?q=80&w=300&auto=format&fit=crop",
+            align: "left"
+        },
+        {
+            id: 4,
+            brand: "Honkai: Star Rail",
+            title: "Explora la Galaxia\nColección Astral",
+            subtitle: "Viaja entre las estrellas con nuestras figuras exclusivas de la tripulación del Expreso Astral.",
+            image: "https://images.unsplash.com/photo-1614728263952-84ea256f9679?q=80&w=1920&auto=format&fit=crop",
+            thumbnail: "https://images.unsplash.com/photo-1614728263952-84ea256f9679?q=80&w=300&auto=format&fit=crop",
+            align: "left"
         }
-    };
-
-    const benefits = [
-        { icon: <Truck size={24} />, title: "Envío Global", desc: "Entrega express en más de 50 países con rastreo en tiempo real." },
-        { icon: <ShieldCheck size={24} />, title: "Pago Seguro", desc: "Transacciones encriptadas y protección total al comprador." },
-        { icon: <Zap size={24} />, title: "Soporte 24/7", desc: "Nuestro equipo está siempre listo para ayudarte." },
-        { icon: <Sparkles size={24} />, title: "Calidad Premium", desc: "Productos seleccionados bajo los más altos estándares." }
     ];
 
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentSlide((prev) => (prev + 1) % slides.length);
+        }, 6000);
+        return () => clearInterval(timer);
+    }, [slides.length]);
+
     const categories = [
-        { name: "Tecnología", image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1000&auto=format&fit=crop", count: "120+ productos" },
-        { name: "Moda", image: "https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=1000&auto=format&fit=crop", count: "85+ productos" },
-        { name: "Hogar", image: "https://images.unsplash.com/photo-1583847268964-b28dc2f51ac9?q=80&w=1000&auto=format&fit=crop", count: "60+ productos" }
+        { name: "Figuras a Escala", image: "https://images.unsplash.com/photo-1608889175123-8ee362201f81?q=80&w=1000&auto=format&fit=crop", count: "Premium Quality" },
+        { name: "Nendoroids & Chibis", image: "https://images.unsplash.com/photo-1541562232579-512a21360020?q=80&w=1000&auto=format&fit=crop", count: "Colección Adorable" },
+        { name: "Ediciones Limitadas", image: "https://images.unsplash.com/photo-1614027164847-1b28cfe1df60?q=80&w=1000&auto=format&fit=crop", count: "Rarezas & Exclusivas" }
+    ];
+
+    const news = [
+        { id: 1, category: "Noticias", date: "12/06/2026", title: "Nueva expansión 'Ecos del Vacío' disponible ahora.", image: "https://images.unsplash.com/photo-1627398242454-45a1465c2479?q=80&w=600&auto=format&fit=crop" },
+        { id: 2, category: "Evento", date: "10/06/2026", title: "Participa en el sorteo de figuras edición limitada.", image: "https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?q=80&w=600&auto=format&fit=crop" },
+        { id: 3, category: "Tienda", date: "08/06/2026", title: "Restock de la colección 'Stella Gold'.", image: "https://images.unsplash.com/photo-1613376023733-0d74332098c3?q=80&w=600&auto=format&fit=crop" }
     ];
 
     return (
         <div className="home-container">
-            {/* Hero Section */}
-            <section className="hero">
-                <div className="container hero-grid">
-                    <motion.div 
-                        className="hero-content"
-                        initial="initial"
-                        animate="animate"
-                        variants={stagger}
+            {/* HOYOVERSE STYLE HERO */}
+            <section className="hero-carousel">
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={currentSlide}
+                        className="slide"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.5, ease: "easeInOut" }}
                     >
-                        <motion.span variants={fadeIn} className="hero-badge">
-                            <Sparkles size={14} /> Nueva Colección 2026
-                        </motion.span>
-                        <motion.h1 variants={fadeIn} className="hero-title">
-                            Eleva tu <span className="text-gradient">Estilo Digital</span>
-                        </motion.h1>
-                        <motion.p variants={fadeIn} className="hero-subtitle">
-                            Descubre una selección curada de productos premium que combinan diseño minimalista con funcionalidad excepcional.
-                        </motion.p>
-                        <motion.div variants={fadeIn} className="hero-actions">
-                            <Link to="/productos" className="btn-primary">
-                                Explorar Colección <ArrowRight size={20} />
-                            </Link>
-                            <Link to="/categoria" className="btn-secondary">
-                                Ver Categorías
-                            </Link>
-                        </motion.div>
-                    </motion.div>
-                    
-                    <motion.div 
-                        className="hero-visual"
-                        initial={{ opacity: 0, scale: 0.9, rotate: -2 }}
-                        animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                    >
-                        <div className="hero-image-wrapper">
-                            <img src={heroImage} alt="Featured Product" className="hero-image" />
-                            <div className="hero-glow"></div>
+                        {/* Background Image */}
+                        <div className="slide-bg-wrapper">
+                            <img src={slides[currentSlide].image} alt="Background" className="slide-bg" />
+                            <div className="slide-overlay-gradient"></div> 
                         </div>
-                        
-                        {/* Floating elements for visual interest */}
-                        <motion.div 
-                            className="floating-card"
-                            animate={{ y: [0, -20, 0] }}
-                            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                        >
-                            <div className="floating-icon"><ShoppingBag size={20} /></div>
-                            <div>
-                                <p className="label">Vendido hoy</p>
-                                <p className="value">+1.2k</p>
-                            </div>
-                        </motion.div>
+
+                        {/* Content Box */}
+                        <div className="container slide-content-container">
+                            <motion.div 
+                                className="slide-content"
+                                initial={{ opacity: 0, x: -30 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+                            >
+                                <div className="hero-brand-container">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Honkai_Impact_3rd_logo.svg/200px-Honkai_Impact_3rd_logo.svg.png" alt="Icon" className="hero-brand-icon" />
+                                    <h3 className="hero-brand">
+                                        {slides[currentSlide].brand}
+                                    </h3>
+                                </div>
+                                <h1 className="hero-title">
+                                    {slides[currentSlide].title.split('\n').map((line, i) => (
+                                        <span key={i} className="title-line">{line}</span>
+                                    ))}
+                                    <span className="title-line highlight-text">Available Now!</span>
+                                </h1>
+                                
+                                <div className="hero-actions">
+                                    <Link to="/productos" className="btn-hoyo">
+                                        Más
+                                    </Link>
+                                </div>
+                            </motion.div>
+                        </div>
                     </motion.div>
+                </AnimatePresence>
+
+                {/* Thumbnails Carousel Indicators */}
+                <div className="hoyo-thumbnails-container">
+                    <div className="hoyo-thumbnails">
+                        {slides.map((slide, idx) => (
+                            <button 
+                                key={idx} 
+                                onClick={() => setCurrentSlide(idx)}
+                                className={`thumbnail-btn ${currentSlide === idx ? 'active' : ''}`}
+                            >
+                                <img src={slide.thumbnail} alt={`Slide ${idx + 1}`} />
+                                {currentSlide === idx && (
+                                    <motion.div 
+                                        className="thumbnail-progress"
+                                        initial={{ width: 0 }}
+                                        animate={{ width: "100%" }}
+                                        transition={{ duration: 6, ease: "linear" }}
+                                        key={`progress-${currentSlide}`}
+                                    />
+                                )}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </section>
 
-            {/* Benefits Section */}
-            <section className="benefits">
+            {/* News Section */}
+            <section className="home-news section-spacing">
                 <div className="container">
-                    <div className="benefits-grid">
-                        {benefits.map((benefit, i) => (
+                    <div className="section-header">
+                        <h2>Últimas <span className="text-gradient">Noticias</span></h2>
+                        <Link to="#" className="view-all">Ver más <ChevronRight size={16} /></Link>
+                    </div>
+                    <div className="news-grid">
+                        {news.map((item, i) => (
                             <motion.div 
-                                key={i} 
-                                className="benefit-card"
-                                whileHover={{ y: -5 }}
+                                key={item.id} 
+                                className="news-card"
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ delay: i * 0.1 }}
+                                viewport={{ once: true }}
                             >
-                                <div className="benefit-icon">{benefit.icon}</div>
-                                <h3>{benefit.title}</h3>
-                                <p>{benefit.desc}</p>
+                                <div className="news-image">
+                                    <img src={item.image} alt={item.title} />
+                                    <div className="news-date-badge">{item.date}</div>
+                                </div>
+                                <div className="news-body">
+                                    <span className="news-category">{item.category}</span>
+                                    <h3>{item.title}</h3>
+                                    <Link to="#" className="news-link">Leer más <ArrowRight size={14} /></Link>
+                                </div>
                             </motion.div>
                         ))}
                     </div>
@@ -118,11 +183,11 @@ export const Home = () => {
             </section>
 
             {/* Categories Section */}
-            <section className="categories">
+            <section className="categories section-spacing">
                 <div className="container">
                     <div className="section-header">
-                        <h2>Categorías <span className="text-gradient">Destacadas</span></h2>
-                        <Link to="/categoria" className="view-all">Ver todas <ChevronRight size={16} /></Link>
+                        <h2>Explora <span className="text-gradient">Clasificaciones</span></h2>
+                        <Link to="/categoria" className="view-all">Acceder a todo <ChevronRight size={16} /></Link>
                     </div>
                     
                     <div className="categories-grid">
@@ -132,11 +197,13 @@ export const Home = () => {
                                 className="category-card"
                                 whileHover={{ scale: 0.98 }}
                             >
-                                <img src={cat.image} alt={cat.name} />
-                                <div className="category-overlay">
-                                    <h3>{cat.name}</h3>
-                                    <p>{cat.count}</p>
-                                    <button className="category-btn">Explorar</button>
+                                <div className="category-card-inner">
+                                    <img src={cat.image} alt={cat.name} />
+                                    <div className="category-overlay">
+                                        <h3>{cat.name}</h3>
+                                        <p>{cat.count}</p>
+                                        <button className="category-btn">Inspeccionar</button>
+                                    </div>
                                 </div>
                             </motion.div>
                         ))}
@@ -145,12 +212,12 @@ export const Home = () => {
             </section>
 
             {/* CTA Section */}
-            <section className="cta">
+            <section className="cta section-spacing">
                 <div className="container">
                     <div className="cta-content">
-                        <h2>¿Listo para transformar tu experiencia?</h2>
-                        <p>Únete a nuestra comunidad de más de 50,000 clientes satisfechos.</p>
-                        <Link to="/productos" className="btn-white">Empezar Ahora</Link>
+                        <h2>¿Listo para expandir tu exhibición?</h2>
+                        <p>Únete a nuestra base de datos de coleccionistas y obtén acceso prioritario a figuras de edición limitada y descuentos exclusivos.</p>
+                        <Link to="/productos" className="btn-primary">Iniciar Misión</Link>
                     </div>
                 </div>
             </section>

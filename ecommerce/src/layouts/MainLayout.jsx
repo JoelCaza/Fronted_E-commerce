@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BotWidget } from "../components/BotWidget";
-import "./MainLayout.css";
+import '../styles/MainLayout.css';
 
 export const MainLayout = () => {
     const { carrito } = useContext(ContextCart);
@@ -27,7 +27,16 @@ export const MainLayout = () => {
         return localStorage.getItem('theme') !== 'light';
     });
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
     const location = useLocation();
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 50);
+        };
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
 
     useEffect(() => {
         const theme = isDark ? 'dark' : 'light';
@@ -44,11 +53,11 @@ export const MainLayout = () => {
 
     return (
         <div className="layout-container">
-            <nav className="navbar">
+            <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
                 <div className="container navbar-inner">
                     <Link to="/" className="navbar-brand">
-                        <span>ECO</span>
-                        <span className="text-gradient">STORE</span>
+                        <span>OTAKU</span>
+                        <span className="text-gradient">HUB</span>
                     </Link>
 
                     <div className="navbar-links-desktop">
@@ -105,11 +114,11 @@ export const MainLayout = () => {
                     <div className="footer-grid">
                         <div className="footer-brand">
                             <Link to="/" className="navbar-brand">
-                                <span>ECO</span>
-                                <span className="text-gradient">STORE</span>
+                                <span>OTAKU</span>
+                                <span className="text-gradient">HUB</span>
                             </Link>
                             <p className="footer-desc">
-                                Definiendo el futuro del comercio digital con elegancia y sostenibilidad.
+                                Definiendo el futuro del coleccionismo otaku con piezas de arte de alta fidelidad.
                             </p>
                             <div className="footer-socials">
                                 <a href="#" className="social-link"><Send size={20} /></a>
@@ -143,7 +152,7 @@ export const MainLayout = () => {
                     </div>
 
                     <div className="footer-bottom">
-                        <p>&copy; 2026 ECOSTORE. Todos los derechos reservados.</p>
+                        <p>&copy; 2026 OTAKUHUB. Todos los derechos reservados.</p>
                         <div className="footer-legal">
                             <a href="#">Privacidad</a>
                             <a href="#">Términos</a>

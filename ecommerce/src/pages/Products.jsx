@@ -1,5 +1,5 @@
 import { CardProduct } from "../components/CardProduct.jsx";
-import "./Products.css";
+import '../styles/Products.css';
 import { useState, useEffect } from "react";
 import { Search, Filter, SlidersHorizontal, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";

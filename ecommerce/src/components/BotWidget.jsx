@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageSquare, X, Send, Sparkles } from "lucide-react";
 import { sendMessage } from "../services/chatService";
-import "./BotWidget.css";
+import '../styles/BotWidget.css';
 
 export const BotWidget = () => {
     const [isOpen, setIsOpen] = useState(false);

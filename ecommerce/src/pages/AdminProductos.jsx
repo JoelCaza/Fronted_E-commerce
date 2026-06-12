@@ -17,8 +17,10 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCategories } from "../services/categoryService";
-import { getProducts, createProduct, updateProduct, deleteProduct } from "../services/productService";
-import "./AdminProductos.css";
+import { getProducts, createProduct, updateProduct, deleteProduct, downloadInventoryReport } from "../services/productService";
+import { downloadOrdersReport } from "../services/orderService";
+import { getImageUrl } from "../services/api";
+import '../styles/AdminProductos.css';
 
 export const AdminProductos = () => {
     const [productos, setProductos] = useState([]);
@@ -26,6 +28,7 @@ export const AdminProductos = () => {
     const [editandoId, setEditandoId] = useState(null);
     const [mensaje, setMensaje] = useState({ text: "", type: "" });
     const [cargando, setCargando] = useState(true);
+    const [descargandoReporte, setDescargandoReporte] = useState(false);
 
     const [form, setForm] = useState({
         categoria_id: "",
@@ -60,6 +63,30 @@ export const AdminProductos = () => {
     const showMensaje = (text, type) => {
         setMensaje({ text, type });
         setTimeout(() => setMensaje({ text: "", type: "" }), 3000);
+    };
+
+    const handleDownloadInventory = async () => {
+        try {
+            setDescargandoReporte(true);
+            await downloadInventoryReport();
+            showMensaje("Reporte de inventario descargado", "success");
+        } catch (error) {
+            showMensaje("Error al descargar reporte de inventario", "error");
+        } finally {
+            setDescargandoReporte(false);
+        }
+    };
+
+    const handleDownloadOrders = async () => {
+        try {
+            setDescargandoReporte(true);
+            await downloadOrdersReport();
+            showMensaje("Reporte de pedidos descargado", "success");
+        } catch (error) {
+            showMensaje("Error al descargar reporte de pedidos", "error");
+        } finally {
+            setDescargandoReporte(false);
+        }
     };
 
     const handleCrearOEditar = async (e) => {
@@ -148,6 +175,25 @@ export const AdminProductos = () => {
                     <h1 className="page-title">Panel de <span className="text-gradient">Productos</span></h1>
                     <p>Gestiona el inventario, precios y categorías de tu tienda.</p>
                 </header>
+
+                <div className="admin-actions-bar">
+                    <button 
+                        className="btn-secondary" 
+                        onClick={handleDownloadInventory}
+                        disabled={descargandoReporte}
+                    >
+                        {descargandoReporte ? <Loader2 className="spinner" size={18} /> : <FileText size={18} />}
+                        Inventario (PDF)
+                    </button>
+                    <button 
+                        className="btn-secondary" 
+                        onClick={handleDownloadOrders}
+                        disabled={descargandoReporte}
+                    >
+                        {descargandoReporte ? <Loader2 className="spinner" size={18} /> : <FileText size={18} />}
+                        Pedidos (PDF)
+                    </button>
+                </div>
 
                 <div className="admin-products-grid">
                     {/* Form Section */}
@@ -249,6 +295,7 @@ export const AdminProductos = () => {
                                     <table>
                                         <thead>
                                             <tr>
+                                                <th>Imagen</th>
                                                 <th>Producto</th>
                                                 <th>Categoría</th>
                                                 <th>Precio</th>
@@ -259,6 +306,13 @@ export const AdminProductos = () => {
                                         <tbody>
                                             {productos.map(prod => (
                                                 <tr key={prod.id}>
+                                                    <td>
+                                                        <img 
+                                                            src={getImageUrl(prod.imagen)} 
+                                                            alt={prod.nombre} 
+                                                            className="admin-product-thumb"
+                                                        />
+                                                    </td>
                                                     <td>
                                                         <div className="product-td-info">
                                                             <span className="product-td-name">{prod.nombre}</span>

@@ -13,7 +13,8 @@ import {
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { getMisPedidos } from "../services/orderService";
-import "./MisPedidos.css";
+import { getImageUrl } from "../services/api";
+import '../styles/MisPedidos.css';
 
 export const MisPedidos = () => {
     const [pedidos, setPedidos] = useState([]);
@@ -108,7 +109,7 @@ export const MisPedidos = () => {
                                             <div key={item.id} className="order-item-row">
                                                 <div className="order-item-info">
                                                     <img 
-                                                        src={item.producto?.imagen || "https://via.placeholder.com/60"} 
+                                                        src={getImageUrl(item.producto?.imagen)} 
                                                         alt={item.producto?.nombre} 
                                                         className="order-item-img"
                                                     />
@@ -138,4 +139,4 @@ export const MisPedidos = () => {
             </div>
         </div>
     );
-};
+}

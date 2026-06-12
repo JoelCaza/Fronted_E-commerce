@@ -1,4 +1,4 @@
-import { apiFetch } from './api';
+import { apiFetch, apiDownload } from './api';
 
 export const getProducts = () => {
     return apiFetch('/productos');
@@ -26,4 +26,8 @@ export const deleteProduct = (id) => {
     return apiFetch(`/productos/eliminarProducto/${id}`, {
         method: 'DELETE'
     });
+};
+
+export const downloadInventoryReport = () => {
+    return apiDownload('/productos/reporte-pdf', 'reporte-inventario.pdf');
 };

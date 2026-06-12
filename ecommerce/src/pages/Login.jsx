@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login } from "../services/authService";
-import "./Login.css";
+import '../styles/Login.css';
 
 export const Login = () => {
     const [email, setEmail] = useState('');
@@ -52,16 +52,16 @@ export const Login = () => {
                         </div>
                     </div>
 
-                    <p className="login-brand">Tienda · Colección 2025</p>
+                    <p className="login-brand">OTAKUHUB · Colección 2026</p>
 
                     <h1 className="login-headline">
-                        Estilo que<br />
-                        <em>define</em> quién<br />
-                        eres.
+                        El arte que<br />
+                        <em>define</em> tu<br />
+                        pasión.
                     </h1>
 
                     <p className="login-tagline">
-                        Descubre piezas exclusivas curadas para cada momento de tu vida. Moda que habla por ti.
+                        Descubre piezas exclusivas curadas para verdaderos coleccionistas. Figuras que cuentan historias.
                     </p>
 
                     <div className="login-bottom-row">

@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCategories, createCategory, deleteCategory } from "../services/categoryService";
-import "./Categoria.css";
+import '../styles/Categoria.css';
 
 export const Categoria = () => {
     const [categorias, setCategorias] = useState([]);

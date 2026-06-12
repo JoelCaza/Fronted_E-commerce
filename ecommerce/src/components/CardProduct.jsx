@@ -2,17 +2,26 @@ import { motion } from 'framer-motion';
 import { ShoppingCart, Eye, Star } from 'lucide-react';
 import { useContext } from 'react';
 import { ContextCart } from '../context/ContextCart';
-import { Link } from 'react-router-dom';
-import './CardProduct.css';
+import { Link, useNavigate } from 'react-router-dom';
+import { getImageUrl } from '../services/api';
+import '../styles/CardProduct.css';
 
 export const CardProduct = ({ producto }) => {
     const { agregarAlCarrito } = useContext(ContextCart);
-    const { id, nombre, precio, imagen, descripcion, stock } = producto;
+    const { id, nombre, precio, imagen, descripcion, stock, categoria } = producto;
+    const navigate = useNavigate();
 
     const handleAgregar = (e) => {
         e.preventDefault();
         e.stopPropagation();
         agregarAlCarrito(producto);
+    };
+
+    const handleNavigate = (e) => {
+        // Solo navega si no se hizo click en un botón de acción
+        if (!e.defaultPrevented) {
+            navigate(`/productos/${id}`);
+        }
     };
 
     return (
@@ -24,10 +33,16 @@ export const CardProduct = ({ producto }) => {
             whileHover={{ y: -8 }}
             transition={{ duration: 0.4 }}
         >
-            <Link to={`/productos/${id}`} className="card-image-link">
+            <div 
+                className="card-image-link" 
+                onClick={handleNavigate} 
+                style={{ cursor: 'pointer', display: 'block' }}
+                role="button"
+                tabIndex={0}
+            >
                 <div className="image-container">
                     <img 
-                        src={imagen || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1000&auto=format&fit=crop"} 
+                        src={getImageUrl(imagen)} 
                         alt={nombre} 
                         loading="lazy"
                     />
@@ -51,16 +66,21 @@ export const CardProduct = ({ producto }) => {
                         >
                             <ShoppingCart size={20} />
                         </motion.button>
-                        <Link to={`/productos/${id}`} className="overlay-btn" title="Ver detalles">
+                        <Link 
+                            to={`/productos/${id}`} 
+                            className="overlay-btn" 
+                            title="Ver detalles"
+                            onClick={(e) => e.stopPropagation()}
+                        >
                             <Eye size={20} />
                         </Link>
                     </div>
                 </div>
-            </Link>
+            </div>
 
             <div className="card-info">
                 <div className="card-meta">
-                    <span className="card-category">Premium</span>
+                    <span className="card-category">{(categoria && typeof categoria === 'object') ? categoria.nombre : (categoria || 'Colección Premium')}</span>
                     <div className="card-rating">
                         <Star size={12} fill="currentColor" />
                         <span>4.9</span>

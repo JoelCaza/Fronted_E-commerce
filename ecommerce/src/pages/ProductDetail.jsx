@@ -16,7 +16,9 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { ContextCart } from "../context/ContextCart";
 import { getProductById } from "../services/productService";
-import "./ProductDetail.css";
+import { getImageUrl } from "../services/api";
+import '../styles/ProductDetail.css';
+
 
 export const ProductDetail = () => {
     const { id } = useParams();
@@ -92,7 +94,7 @@ export const ProductDetail = () => {
                         <div className="main-image-wrapper">
                             <motion.img 
                                 key={activeImage}
-                                src={imagen || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1000&auto=format&fit=crop"} 
+                                src={getImageUrl(imagen)} 
                                 alt={nombre}
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
@@ -110,7 +112,7 @@ export const ProductDetail = () => {
                                     className={`thumb-btn ${activeImage === i ? 'active' : ''}`}
                                     onClick={() => setActiveImage(i)}
                                 >
-                                    <img src={imagen} alt={`${nombre} view ${i}`} />
+                                    <img src={getImageUrl(imagen)} alt={`${nombre} view ${i}`} />
                                 </button>
                             ))}
                         </div>

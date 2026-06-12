@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Ghost, Home, ArrowLeft } from "lucide-react";
-import "./NotFound.css";
+import '../styles/NotFound.css';
 
 export const NotFound = () => {
     return (

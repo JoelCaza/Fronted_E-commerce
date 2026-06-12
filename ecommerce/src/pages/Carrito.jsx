@@ -14,7 +14,8 @@ import {
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { checkout } from "../services/orderService";
-import "./Carrito.css";
+import { getImageUrl } from "../services/api";
+import '../styles/Carrito.css';
 
 export const Carrito = () => {
     const { carrito, eliminarDelCarrito, vaciarCarrito, agregarAlCarrito, quitarUno } = useContext(ContextCart);
@@ -103,7 +104,7 @@ export const Carrito = () => {
                                         layout
                                     >
                                         <div className="item-image">
-                                            <img src={item.imagen || "https://via.placeholder.com/150"} alt={item.nombre} />
+                                            <img src={getImageUrl(item.imagen)} alt={item.nombre} />
                                         </div>
                                         <div className="item-details">
                                             <div className="item-info">
